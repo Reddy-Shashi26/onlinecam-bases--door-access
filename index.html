@@ -1,25 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Firebase Base64 Image Minimal (Realtime)</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      text-align: center;
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
       background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px;
     }
 
     .image-container {
-      display: inline-block;
-      max-width: 100%;
-      width: 320px;
+      width: 100%;
+      max-width: 480px;
       padding: 10px;
+      margin: 10px 0;
       border: 2px solid #ccc;
-      box-sizing: border-box;
-      background-color: white;
-      margin-bottom: 20px;
-      transition: border 0.3s ease, box-shadow 0.3s ease;
+      background-color: #fff;
+      animation: none;
     }
 
     .image-container.alert {
@@ -44,12 +57,15 @@
       margin-top: 10px;
       font-weight: bold;
       color: #555;
+      text-align: center;
     }
 
     button {
-      padding: 10px 20px;
+      width: 90%;
+      max-width: 320px;
+      padding: 12px;
       font-size: 16px;
-      margin: 10px;
+      margin: 10px auto;
       cursor: pointer;
       background-color: #007BFF;
       color: white;
@@ -106,7 +122,6 @@
 
     let soundInterval = null;
 
-    // Update image when value changes
     onValue(base64Ref, snapshot => {
       const base64String = snapshot.exists() ? snapshot.val() : '';
 
@@ -116,9 +131,9 @@
           ? base64String
           : 'data:image/jpeg;base64,' + base64String;
         statusText.innerText = "🚨 Someone is at the door! Check the image.";
-        grantBtn.style.display = 'inline-block';
+        grantBtn.style.display = 'block';
 
-        // Start alert sound every 3 seconds
+        // Play sound every 2 seconds
         if (!soundInterval) {
           alertSound.play().catch(e => console.log("Autoplay blocked:", e));
           soundInterval = setInterval(() => {
@@ -132,7 +147,6 @@
         statusText.innerText = "🔒 Door closed. No one requesting for access.";
         grantBtn.style.display = 'none';
 
-        // Stop alert sound
         if (soundInterval) {
           clearInterval(soundInterval);
           soundInterval = null;
@@ -140,7 +154,6 @@
       }
     });
 
-    // Grant Access
     window.grantAccess = function () {
       const accessRef = ref(db, 'test/access');
       set(accessRef, true)
@@ -159,7 +172,6 @@
         });
     };
 
-    // Remove image
     window.removeImage = function () {
       set(base64Ref, '')
         .then(() => {
@@ -176,13 +188,11 @@
   <!-- Audio Alert -->
   <audio id="alertSound" src="https://www.soundjay.com/misc/sounds/bulb-horn-02.mp3" preload="auto"></audio>
 
-  <!-- Grant Access Button (initially hidden) -->
+  <!-- Grant Access Button -->
   <button id="grantAccessBtn" onclick="grantAccess()" style="display: none;">Grant Access</button>
 
   <!-- Remove Image Button -->
-  <div>
-    <button id="removeBtn" onclick="removeImage()">Remove Image</button>
-  </div>
+  <button id="removeBtn" onclick="removeImage()">Remove Image</button>
 
 </body>
 </html>
