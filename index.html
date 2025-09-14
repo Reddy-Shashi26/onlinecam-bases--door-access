@@ -158,6 +158,7 @@
         .then(() => {
           setTimeout(() => {
             set(accessRef, false);
+	    removeImage();
           }, 2000);
         });
     };
